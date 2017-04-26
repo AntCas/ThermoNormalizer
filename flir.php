@@ -205,7 +205,7 @@ if ( !isset($options['pip']) )
         if ( !isset($options['scale']) )
             {
             // with color scale
-            exec($convert." ir.png ".$resize." $pal -clut -background ".$frame_color." -flatten gradient.png -gravity East +append $destimg");
+            exec($convert." ir.png ".$resize." $pal -clut -background ".$frame_color." -flatten +append $destimg");
         }else{
             exec($convert." ir.png ".$resize." $pal -clut ".$destimg);
         }
