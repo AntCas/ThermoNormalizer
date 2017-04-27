@@ -227,6 +227,8 @@ if ( !isset($options['pip']) )
     exec($convert." ir.png $crop +repage ".$resize." $pal -clut embedded.png +swap -gravity Center -geometry $geometrie -compose over -composite -background ".$frame_color." -flatten +matte gradient.png -gravity East +append ".$destimg);
 }
 
+
+
 print("wrote $destimg with Temp-Range: $Temp_min / $Temp_max degree Celsius\n");
 
 ?>
