@@ -216,8 +216,6 @@ def create_final_output(name, pal, meta):
     cropx = resizepercent * int(meta['RawThermalImageWidth'])/100;
     cropy = resizepercent * int(meta['RawThermalImageHeight'])/100;
 
-    check_call('convert '+name+'_ir.png '+resize+' ' + pal + ' -clut ' + name+'_ir_resize.png', shell=True);
-
     #TODO: Update for posix
     check_call("convert "+name+"_embedded.png -gravity center -crop "+str(cropx)+"x"+str(cropy)+geometrie \
                + " -colorspace gray -sharpen 0x3 -level 30%,70%! " \
@@ -271,9 +269,6 @@ def cleanup_files(name):
         check_call(str(cm+' '+name+'_ir2_color_scale.png'), shell=True)
     if os.path.isfile(str(name+'_gradient.png')):
         check_call(str(cm+' '+name+'_gradient.png'), shell=True)
-    # I don't think anyone is using these
-    if os.path.isfile(str(name+'_ir_resize.png')):
-        check_call(str(cm+' '+name+'_ir_resize.png'), shell=True)
     # check if subdirectories exist, otherwise create them
     if not os.path.isdir('rgb_png_files'):
         check_call(str('mkdir rgb_png_files'), shell=True)
