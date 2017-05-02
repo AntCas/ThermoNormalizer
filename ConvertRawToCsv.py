@@ -34,7 +34,6 @@ import re
 import math
 import os.path
 import os
-import json
 import argparse
 
 
@@ -182,7 +181,7 @@ def extract_raw_data(file, outName, meta, no_endian):
     F = float(meta['PlanckF'])
    
     # Set max and min temperature of the image for coloring
-    if args.normalize:
+    if False and args.normalize: # remove False to restore this option
         Max, Min = get_temperature_range()
     else:
         Max = float(meta['RawValueMedian'])+float(meta['RawValueRange'])/2
@@ -259,10 +258,6 @@ def create_final_output(name, pal, meta):
 
     return 0
 
-def write_metadata_file(name, exifData):
-    with open(name + '_meta.json', 'w') as f:
-        json.dump(exifData, f)
-
 def cleanup_files(name):
     #cleanup
     cm = "del"
@@ -295,13 +290,9 @@ def cleanup_files(name):
     if os.path.isfile(str(name+'_raw_resize.png')):
         check_call(str(cm+' '+name+'_raw_resize.png'), shell=True)
     # check if subdirectories exist, otherwise create them
-    if not os.path.isdir('json_files'):
-        check_call(str('mkdir json_files'), shell=True)
     if not os.path.isdir('rgb_png_files'):
         check_call(str('mkdir rgb_png_files'), shell=True)
     # organize files into subdirectories
-    if os.path.isfile(str(name+'_meta.json')):
-        check_call(str('mv '+name+'_meta.json json_files/.'), shell=True)
     if os.path.isfile(str(name+'_embedded_crop.png')):
         check_call(str('mv '+name+'_embedded_crop.png rgb_png_files/.'), shell=True)
         
@@ -315,14 +306,6 @@ def process_files(relevant_path):
                   if any(fn.endswith(ext) for ext in included_extenstions)]
     print "file_names: " + str(file_names)
 
-    # Write Metadata First
-    for file in file_names:
-        imgFile = relevant_path + file
-        imgName = imgFile.split(relevant_path)[1].split('.')[0]
-        if os.path.isfile(imgFile):
-            exifData = getExifData(imgFile)
-            write_metadata_file(imgName, exifData)
-
     for file in file_names:
         imgFile = relevant_path + file
         imgName = imgFile.split(relevant_path)[1].split('.')[0]
@@ -335,7 +318,6 @@ def process_files(relevant_path):
             extract_raw_data(imgFile, imgName, exifData, Android)
             extract_embedded_file(imgFile, imgName, Android)
             create_final_output(imgName, pal, exifData)
-            write_metadata_file(imgName, exifData)
             cleanup_files(imgName)
         else:
             print('File ['+imgFile+'] Not Found!')
