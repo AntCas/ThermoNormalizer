@@ -145,6 +145,8 @@ def create_palette_file(pal, file, name, meta):
                + ' -pointsize 15 label:\"' + str(Cmax) + ' C\" +swap -gravity Center -append  label:\"' + str(Cmin) + ' C\" -append '+name+'_gradient.png', shell=True)
     return 0
 
+# Gets range of temperatures accross all thermo images, depends on existence of json files
+# TODO: Change this to read the exifdata directly
 def get_temperature_range():
     # Get json file names
     print os.listdir('.')
