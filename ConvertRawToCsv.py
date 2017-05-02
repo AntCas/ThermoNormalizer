@@ -156,7 +156,29 @@ def get_temperature_range(exifDataAll):
         min_temp = max(min_temp, min_temp_this_image)
 
     return max_temp, min_temp
+
+# Calculates metadata used by the extract_raw_data(...) function
+# Depends on the values it extracts from meta being the same accross all images
+def calc_extract_raw_data_meta_info(meta):
+    global Max, Min, R1, R2, B, O, F, Smax, Smin, Sdelta
+    # Set max and min temperature of the image for coloring
+    if args.normalize: # remove False to restore this option
+        Max, Min = TEMP_RANGE
+    else:
+        Max = float(meta['RawValueMedian'])+float(meta['RawValueRange'])/2
+        Min = Max-float(meta['RawValueRange'])
+
+    R1 = float(meta['PlanckR1'])
+    R2 = float(meta['PlanckR2'])
+    B = float(meta['PlanckB'])
+    O = float(meta['PlanckO'])
+    F = float(meta['PlanckF'])
+
+    Smax=B/math.log(R1/(R2*(Max+O))+F);
+    Smin=B/math.log(R1/(R2*(Min+O))+F);
+    Sdelta=Smax-Smin;
     
+# Extract raw thermo data into a thermo png file 
 def extract_raw_data(file, outName, meta, no_endian):
     #16 bit PNG (Get Raw Thermal Values)
     resize = "-resize 200%"
@@ -166,30 +188,12 @@ def extract_raw_data(file, outName, meta, no_endian):
     else:
         check_call(str('exiftool -b -RawThermalImage '+file+' | convert - gray:- | convert -depth 16 -endian msb -size '+size+'  gray:- '+outName+'_raw.png'), shell=True)
         
-    #TODO: Best place for repeated calculations?
-    R1 = float(meta['PlanckR1'])
-    R2 = float(meta['PlanckR2'])
-    B = float(meta['PlanckB'])
-    O = float(meta['PlanckO'])
-    F = float(meta['PlanckF'])
-  
-    # Set max and min temperature of the image for coloring
-    if args.normalize: # remove False to restore this option
-        Max, Min = TEMP_RANGE
-    else:
-        Max = float(meta['RawValueMedian'])+float(meta['RawValueRange'])/2
-        Min = Max-float(meta['RawValueRange'])
-
-    print Max, Min
-
-    Smax=B/math.log(R1/(R2*(Max+O))+F);
-    Smin=B/math.log(R1/(R2*(Min+O))+F);
-    Sdelta=Smax-Smin;
     check_call('convert '+outName+'_raw.png -fx \"('+str(B)+'/ln('+str(R1)+'/('+str(R2)+'*((65535*u+'+str(O)+')?(65535*u+'+str(O)+'):1))+' \
                +str(F)+')-'+str(Smin)+')/'+str(Sdelta)+'\" '+outName+'_ir.png', shell=True)
     
     return 0
 
+# Extract the embedded rgb data from the FLIR thermo image to a png
 def extract_embedded_file(file, outName, dat):
     #Get Embedded Image
     if dat:
@@ -280,6 +284,11 @@ def process_files(relevant_path):
 
     print TEMP_RANGE
 
+    # Calculate some metadata we'll need to extract the thermo data into an png file
+    # This will create several global values and depends on the camera settings not changing between images
+    calc_extract_raw_data_meta_info(exifDataAll.values()[0])
+
+    # Used for timing the functions below
     t1t, t2t, t3t, t4t, t5t = 0, 0, 0, 0, 0
 
     for file in file_names:
