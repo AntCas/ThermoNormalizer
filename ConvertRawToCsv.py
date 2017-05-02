@@ -80,7 +80,7 @@ def getExifData(img):
                 ret[key] = val
     return ret
 
-def convert_pixel(targ, meta):
+def convert_pixel(targ, exifData):
     # Heat conversion (Celcius)
     R1 = float(exifData['PlanckR1'])
     R2 = float(exifData['PlanckR2'])
@@ -305,6 +305,8 @@ def process_files(relevant_path):
                   if any(fn.endswith(ext) for ext in included_extenstions)]
     print "file_names: " + str(file_names)
 
+
+    # Gather all exif data
     exifDataAll = {}
     for file in file_names:
         imgFile = relevant_path + file
@@ -318,7 +320,7 @@ def process_files(relevant_path):
         #Process File
         if os.path.isfile(imgFile):
             print('Processing: ' + imgFile)
-            exifData = getExifData(imgFile)
+            exifData = exifDataAll[imgFile]
             create_palette_file(pal, imgFile, imgName, exifData)
             extract_raw_data(imgFile, imgName, exifData, Android)
             extract_embedded_file(imgFile, imgName, Android)
