@@ -36,6 +36,8 @@ import os.path
 import os
 import argparse
 
+import time # for performance profiling
+
 
 #ImageMagick 7 uses alpha-color; older uses mattecolor"
 #alpha_color = "mattecolor"
@@ -290,7 +292,6 @@ def cleanup_files(name):
     if os.path.isfile(str(name+'_embedded_crop.png')):
         check_call(str('mv '+name+'_embedded_crop.png rgb_png_files/.'), shell=True)
         
-
     return 0
 
 def process_files(relevant_path):
@@ -314,6 +315,8 @@ def process_files(relevant_path):
 
     print TEMP_RANGE
 
+    t1t, t2t, t3t, t4t, t5t = 0, 0, 0, 0, 0
+
     for file in file_names:
         imgFile = relevant_path + file
         imgName = imgFile.split(relevant_path)[1].split('.')[0]
@@ -322,13 +325,35 @@ def process_files(relevant_path):
         if os.path.isfile(imgFile):
             print('Processing: ' + imgFile)
             exifData = exifDataAll[imgFile]
-            create_palette_file(pal, imgFile, imgName, exifData)
-            extract_raw_data(imgFile, imgName, exifData, Android)
-            extract_embedded_file(imgFile, imgName, Android)
-            create_final_output(imgName, pal, exifData)
-            cleanup_files(imgName)
+
+            t1s = time.time()
+            create_palette_file(pal, imgFile, imgName, exifData) #6.77s
+            t1e = time.time()
+            t1t += t1e - t1s
+
+            t2s = time.time()
+            extract_raw_data(imgFile, imgName, exifData, Android) #20.15s
+            t2e = time.time()
+            t2t += t2e - t2s
+
+            t3s = time.time()
+            extract_embedded_file(imgFile, imgName, Android) #7.18s
+            t3e = time.time()
+            t3t += t3e - t3s
+
+            t4s = time.time()
+            create_final_output(imgName, pal, exifData) #65.33s
+            t4e = time.time()
+            t4t += t4e - t4s
+
+            t5s = time.time()
+            cleanup_files(imgName) #1.45s
+            t5e = time.time()
+            t5t += t5e - t5s
         else:
             print('File ['+imgFile+'] Not Found!')
+    
+    print "t1t:", t1t, "t2t:", t2t, "t3t:", t3t, "t4t:", t4t, "t5t:", t5t
 
 if __name__ == "__main__":
     # parse command line arguments (e.g. file path)
