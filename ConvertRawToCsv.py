@@ -267,7 +267,6 @@ def process_files(relevant_path):
                   if any(fn.endswith(ext) for ext in included_extenstions)]
     print "file_names: " + str(file_names)
 
-
     # Gather all exif data
     exifDataAll = {}
     for file in file_names:
@@ -294,27 +293,27 @@ def process_files(relevant_path):
             exifData = exifDataAll[imgFile]
 
             t1s = time.time()
-            create_palette_file(pal, imgFile, imgName, exifData) #6.77s, 0.44s
+            create_palette_file(pal, imgFile, imgName, exifData) #6.63s, 0.42s
             t1e = time.time()
             t1t += t1e - t1s
 
             t2s = time.time()
-            extract_raw_data(imgFile, imgName, exifData, Android) #20.15s, 1.45s
+            extract_raw_data(imgFile, imgName, exifData, Android) #15.39s, 1.15s
             t2e = time.time()
             t2t += t2e - t2s
 
             t3s = time.time()
-            extract_embedded_file(imgFile, imgName, Android) #7.18s, 0.46s
+            extract_embedded_file(imgFile, imgName, Android) #7.03s, 0.62s
             t3e = time.time()
             t3t += t3e - t3s
 
             t4s = time.time()
-            create_final_output(imgName, pal, exifData) #65.33s, 4.53s
+            create_final_output(imgName, pal, exifData) #17.07s, 1.27s
             t4e = time.time()
             t4t += t4e - t4s
 
             t5s = time.time()
-            cleanup_files(imgName) #1.45s, 0.11s
+            cleanup_files(imgName) #.76s, 0.05s
             t5e = time.time()
             t5t += t5e - t5s
             print "t1b:", t1e - t1s, "t2b:", t2e - t2s, "t3b:", t3e - t3s, "t4b:", t4e - t4s, "t5b:", t5e - t5s
