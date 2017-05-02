@@ -219,9 +219,6 @@ def create_final_output(name, pal, meta):
     check_call('convert '+name+'_ir.png '+resize+' ' + pal + ' -clut ' + name+'_ir_resize.png', shell=True);
     check_call('convert '+name+'_raw.png '+resize+' '+name+'_raw_resize.png', shell=True);
 
-    check_call("convert " + name + "_embedded.png -gravity center -crop " + str(cropx) + "x" + str(cropy) + geometrie \
-               + " -resize 480x640 " + name + "_embedded_crop.png", shell=True)
-
     #TODO: Update for posix
     check_call("convert "+name+"_embedded.png -gravity center -crop "+str(cropx)+"x"+str(cropy)+geometrie \
                + " -colorspace gray -sharpen 0x3 -level 30%,70%! " \
@@ -284,9 +281,6 @@ def cleanup_files(name):
     # check if subdirectories exist, otherwise create them
     if not os.path.isdir('rgb_png_files'):
         check_call(str('mkdir rgb_png_files'), shell=True)
-    # organize files into subdirectories
-    if os.path.isfile(str(name+'_embedded_crop.png')):
-        check_call(str('mv '+name+'_embedded_crop.png rgb_png_files/.'), shell=True)
         
     return 0
 
