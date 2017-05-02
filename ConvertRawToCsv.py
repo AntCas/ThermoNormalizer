@@ -258,9 +258,6 @@ def cleanup_files(name):
         check_call(str(cm+' '+name+'_ir2.png'), shell=True)
     if os.path.isfile(str(name+'_gradient.png')):
         check_call(str(cm+' '+name+'_gradient.png'), shell=True)
-    # check if subdirectories exist, otherwise create them
-    if not os.path.isdir('rgb_png_files'):
-        check_call(str('mkdir rgb_png_files'), shell=True)
         
     return 0
 
