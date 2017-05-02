@@ -206,8 +206,6 @@ def create_final_output(name, pal, meta):
     #Scaled IR Images
     resize = "-resize 200%"
     check_call('convert '+name+'_ir.png '+resize+' ' + pal + ' -clut ' + name+'_ir2.png', shell=True);
-    check_call('convert '+name+'_ir2.png -background ' + frame_color + ' -flatten +matte '+name+'_gradient.png -gravity East +append ' \
-               + name+'_ir2_color_scale.png', shell=True);
 
     #pip
     geometrie = str(meta['OffsetX'])+str(meta['OffsetY']);
@@ -265,8 +263,6 @@ def cleanup_files(name):
         check_call(str(cm+' '+name+'_ir2.png'), shell=True)
     if os.path.isfile(str(name+'_ir3.png')):
         check_call(str(cm+' '+name+'_ir3.png'), shell=True)
-    if os.path.isfile(str(name+'_ir2_color_scale.png')):
-        check_call(str(cm+' '+name+'_ir2_color_scale.png'), shell=True)
     if os.path.isfile(str(name+'_gradient.png')):
         check_call(str(cm+' '+name+'_gradient.png'), shell=True)
     # check if subdirectories exist, otherwise create them
