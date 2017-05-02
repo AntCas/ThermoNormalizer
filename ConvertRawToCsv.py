@@ -203,7 +203,6 @@ def create_final_output(name, pal, meta):
     frame_color = 'black'
     #Scaled IR Images
     resize = "-resize 200%"
-    check_call('convert '+name+'_ir.png '+resize+' ' + pal + ' -clut ' + name+'_ir2.png', shell=True);
 
     #pip
     geometrie = str(meta['OffsetX'])+str(meta['OffsetY']);
