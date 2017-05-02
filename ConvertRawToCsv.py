@@ -249,7 +249,6 @@ def create_final_output(name, pal, meta):
     check_call("convert "+name+"_embedded.png "+name+"_ir2.png -gravity Center -geometry " +geometrie+ " -compose over -composite -background " + frame_color \
                + " -flatten "+name+"_final_without_scale.png", shell=True)
     check_call("convert "+name+"_final_without_scale.png -gravity Center -crop "+str(cropx)+"x"+str(cropy)+geometrie+" "+name+"_final_cropped.png", shell=True)
-    check_call("convert "+name+"_final_cropped.png +matte "+name+"_gradient.png -gravity East +append "+name+"_final_cropped_with_scale.png", shell=True)
     check_call('convert ' + name+'_final_cropped.png ' + '-resize 480x640' + ' ' + name+'_final_cropped_resized.png', shell=True);
 
     return 0
