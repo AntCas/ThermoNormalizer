@@ -217,7 +217,6 @@ def create_final_output(name, pal, meta):
     cropy = resizepercent * int(meta['RawThermalImageHeight'])/100;
 
     check_call('convert '+name+'_ir.png '+resize+' ' + pal + ' -clut ' + name+'_ir_resize.png', shell=True);
-    check_call('convert '+name+'_raw.png '+resize+' '+name+'_raw_resize.png', shell=True);
 
     #TODO: Update for posix
     check_call("convert "+name+"_embedded.png -gravity center -crop "+str(cropx)+"x"+str(cropy)+geometrie \
@@ -225,7 +224,6 @@ def create_final_output(name, pal, meta):
                #TODO: This is the line that gives us the MSX definition, but it's not outputting correctly (possibly due to ImageMagick Change)
                #+" ( -clone 0 -blur 0x3 ) -compose mathematics -define compose:args=0,-1,+1,0.5 -composite -colorspace gray -sharpen 0x3 -level 30%,70%! " \
                +name+"_embedded1.png", shell=True)
-
 
     #Emboss image (not sure if this produces the right style of image)
     check_call("convert "+name+"_embedded.png -gravity center -crop "+str(cropx)+"x"+str(cropy)+geometrie \
@@ -276,8 +274,6 @@ def cleanup_files(name):
     # I don't think anyone is using these
     if os.path.isfile(str(name+'_ir_resize.png')):
         check_call(str(cm+' '+name+'_ir_resize.png'), shell=True)
-    if os.path.isfile(str(name+'_raw_resize.png')):
-        check_call(str(cm+' '+name+'_raw_resize.png'), shell=True)
     # check if subdirectories exist, otherwise create them
     if not os.path.isdir('rgb_png_files'):
         check_call(str('mkdir rgb_png_files'), shell=True)
