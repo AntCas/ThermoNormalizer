@@ -166,8 +166,6 @@ def extract_raw_data(file, outName, meta, no_endian):
     else:
         check_call(str('exiftool -b -RawThermalImage '+file+' | convert - gray:- | convert -depth 16 -endian msb -size '+size+'  gray:- '+outName+'_raw.png'), shell=True)
         
-    check_call('convert '+outName+'_raw.png '+resize+' '+outName+'_raw2x.png', shell=True);
-
     #TODO: Best place for repeated calculations?
     R1 = float(meta['PlanckR1'])
     R2 = float(meta['PlanckR2'])
@@ -249,8 +247,6 @@ def cleanup_files(name):
 
     if os.path.isfile(str(name+'_raw.png')):
         check_call(str(cm+' '+name+'_raw.png'), shell=True)
-    if os.path.isfile(str(name+'_raw2x.png')):
-        check_call(str(cm+' '+name+'_raw2x.png'), shell=True)    
     if os.path.isfile(str(name+'_palette.png')):
         check_call(str(cm+' '+name+'_palette.png'), shell=True)
     if os.path.isfile(str(name+'_embedded1.png')):
