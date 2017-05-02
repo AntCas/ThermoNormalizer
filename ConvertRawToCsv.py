@@ -300,11 +300,16 @@ def cleanup_files(name):
     return 0
 
 def process_files(relevant_path):
-    global exifData
     included_extenstions = ['jpg', 'JPG']
     file_names = [fn for fn in os.listdir(relevant_path)
                   if any(fn.endswith(ext) for ext in included_extenstions)]
     print "file_names: " + str(file_names)
+
+    exifDataAll = {}
+    for file in file_names:
+        imgFile = relevant_path + file
+        if os.path.isfile(imgFile):
+            exifDataAll[imgFile] = getExifData(imgFile) 
 
     for file in file_names:
         imgFile = relevant_path + file
