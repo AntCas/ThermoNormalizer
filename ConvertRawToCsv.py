@@ -173,7 +173,6 @@ def extract_raw_data(file, outName, meta, no_endian):
     O = float(meta['PlanckO'])
     F = float(meta['PlanckF'])
   
-    print TEMP_RANGE 
     # Set max and min temperature of the image for coloring
     if args.normalize: # remove False to restore this option
         Max, Min = TEMP_RANGE
