@@ -32,7 +32,6 @@ import subprocess
 from subprocess import check_call
 import re
 import math
-import csv
 import os.path
 import os
 import json
@@ -260,40 +259,6 @@ def create_final_output(name, pal, meta):
 
     return 0
 
-def extract_temperature_csv(name, meta):
-    # Convert Thermal Values to CSV File
-    if os.path.isfile(str(name+'_raw.png')):
-        extracted = Image.open(str(name+'_raw.png'))
-        pix = extracted.load()
-
-        #Writing CSV File
-        tempFile = open(name+'_TemperatureDataRaw.csv', 'wb')
-        writer = csv.writer(tempFile, delimiter=',')
-
-        for height in range(0, int(meta['RawThermalImageHeight'])):
-            row = []
-            for width in range(0, int(meta['RawThermalImageWidth'])):
-                row.append(convert_pixel(pix[width, height], meta))
-            writer.writerow(row)
-        tempFile.close()
-
-    if os.path.isfile(str(name+'_raw2x.png')):
-        extracted = Image.open(str(name+'_raw2x.png'))
-        pix = extracted.load()
-
-        #Writing CSV File
-        tempFile = open(name+'_TemperatureDataRawResized480x640.csv', 'wb')
-        writer = csv.writer(tempFile, delimiter=',')
-
-        for height in range(0, int(int(meta['RawThermalImageHeight']) * 2)):
-            row = []
-            for width in range(0, int(int(meta['RawThermalImageWidth']) * 2)):
-                row.append(convert_pixel(pix[width, height], meta))
-            writer.writerow(row)
-
-        tempFile.close()
-    return 0
-
 def write_metadata_file(name, exifData):
     with open(name + '_meta.json', 'w') as f:
         json.dump(exifData, f)
@@ -329,18 +294,12 @@ def cleanup_files(name):
         check_call(str(cm+' '+name+'_ir_resize.png'), shell=True)
     if os.path.isfile(str(name+'_raw_resize.png')):
         check_call(str(cm+' '+name+'_raw_resize.png'), shell=True)
-    if os.path.isfile(str(name+'_TemperatureDataRaw.csv')):
-        check_call(str(cm+' '+name+'_TemperatureDataRaw.csv'), shell=True)
     # check if subdirectories exist, otherwise create them
-    if not os.path.isdir('csv_files'):
-        check_call(str('mkdir csv_files'), shell=True)
     if not os.path.isdir('json_files'):
         check_call(str('mkdir json_files'), shell=True)
     if not os.path.isdir('rgb_png_files'):
         check_call(str('mkdir rgb_png_files'), shell=True)
     # organize files into subdirectories
-    if os.path.isfile(str(name+'_TemperatureDataRawResized480x640.csv')):
-        check_call(str('mv '+name+'_TemperatureDataRawResized480x640.csv csv_files/.'), shell=True)
     if os.path.isfile(str(name+'_meta.json')):
         check_call(str('mv '+name+'_meta.json json_files/.'), shell=True)
     if os.path.isfile(str(name+'_embedded_crop.png')):
@@ -376,7 +335,6 @@ def process_files(relevant_path):
             extract_raw_data(imgFile, imgName, exifData, Android)
             extract_embedded_file(imgFile, imgName, Android)
             create_final_output(imgName, pal, exifData)
-            #extract_temperature_csv(imgName, exifData)
             write_metadata_file(imgName, exifData)
             cleanup_files(imgName)
         else:
@@ -384,7 +342,7 @@ def process_files(relevant_path):
 
 if __name__ == "__main__":
     # parse command line arguments (e.g. file path)
-    parser = argparse.ArgumentParser(description='FLIR raw image to csv converter')
+    parser = argparse.ArgumentParser(description='FLIR image normalizer and enhancer')
     parser.add_argument('path', default='.')
     parser.add_argument('--normalize', '-n', action='store_true')
     args = parser.parse_args()
