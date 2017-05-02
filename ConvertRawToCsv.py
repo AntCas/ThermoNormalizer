@@ -241,8 +241,6 @@ def create_final_output(name, pal, meta):
     #Create PIP
     #TODO: This mostly works but the thermal blending has been an issue, but I don't think it will impact any of our current work.
     check_call("convert "+name+"_ir.png " + resize + " " + pal + " -clut "+name+"_embedded1.png +swap -compose overlay -composite "+name+"_ir2.png", shell=True)
-    check_call("convert "+name+"_embedded.png "+name+"_ir2.png -gravity Center -geometry " +geometrie+ " -compose over -composite -background " + frame_color \
-               + " -flatten +matte "+name+"_gradient.png -gravity East +append "+name+"_final.png", shell=True)
 
     #Recreate Original Image Cleaned up
     # If the above worked better, this would cropped/resize the IR image to match and make one with a scale (but again, not necessary for projects)
