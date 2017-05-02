@@ -144,21 +144,14 @@ def create_palette_file(pal, file, name, meta):
     return 0
 
 # Gets range of temperatures accross all thermo images, depends on existence of json files
-# TODO: Change this to read the exifdata directly
-def get_temperature_range():
-    # Get json file names
-    print os.listdir('.')
-    json_file_names = [fn for fn in os.listdir('./') if fn.endswith('json')]
-    print json_file_names
+def get_temperature_range(exifDataAll):
     # find the temperature range accross all images
     max_temp, min_temp = None, None
-    for name in json_file_names:
-        with open(('./' + name), 'r') as f:
-            metadata = json.loads(f.read())
-            max_temp_this_image = int(metadata["RawValueMedian"]) + int(metadata["RawValueRange"])/2
-            min_temp_this_image = max_temp_this_image - int(metadata["RawValueRange"])
-            max_temp = max(max_temp, max_temp_this_image)
-            min_temp = max(min_temp, min_temp_this_image)
+    for metadata in exifDataAll.values():
+        max_temp_this_image = int(metadata["RawValueMedian"]) + int(metadata["RawValueRange"])/2
+        min_temp_this_image = max_temp_this_image - int(metadata["RawValueRange"])
+        max_temp = max(max_temp, max_temp_this_image)
+        min_temp = max(min_temp, min_temp_this_image)
 
     return max_temp, min_temp
     
@@ -179,10 +172,11 @@ def extract_raw_data(file, outName, meta, no_endian):
     B = float(meta['PlanckB'])
     O = float(meta['PlanckO'])
     F = float(meta['PlanckF'])
-   
+  
+    print TEMP_RANGE 
     # Set max and min temperature of the image for coloring
-    if False and args.normalize: # remove False to restore this option
-        Max, Min = get_temperature_range()
+    if args.normalize: # remove False to restore this option
+        Max, Min = TEMP_RANGE
     else:
         Max = float(meta['RawValueMedian'])+float(meta['RawValueRange'])/2
         Min = Max-float(meta['RawValueRange'])
@@ -312,6 +306,13 @@ def process_files(relevant_path):
         imgFile = relevant_path + file
         if os.path.isfile(imgFile):
             exifDataAll[imgFile] = getExifData(imgFile) 
+
+    # Calculate temperature range if we're normalizing
+    global TEMP_RANGE
+    if args.normalize:
+        TEMP_RANGE = get_temperature_range(exifDataAll)
+
+    print TEMP_RANGE
 
     for file in file_names:
         imgFile = relevant_path + file
